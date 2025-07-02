@@ -20,6 +20,11 @@
   "homepage": "https://github.com/evdokimoww/typescript-project-81#readme",
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@stylistic/eslint-plugin": "^5.1.0",
+    "@types/eslint": "^9.6.1",
+    "@types/node": "^24.0.10",
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
     "eslint": "^9.29.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.1"

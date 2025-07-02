@@ -20,3 +20,5 @@ class Tag {
         return startTag
     }
 }
+
+console.log(new Tag('br'))
