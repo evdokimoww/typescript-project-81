@@ -25,3 +25,7 @@ jobs:
       - run: make install
       - run: make lint
       - run: make test
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets. SONARCLOUD_TOKEN }}
