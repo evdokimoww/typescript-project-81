@@ -1,4 +1,4 @@
-class Tag {
+export class Tag {
     private pairedTags: string[] = ['label', 'div']
 
     constructor(public tagName: string,

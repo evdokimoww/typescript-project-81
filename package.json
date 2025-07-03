@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rm -rf ./dist && tsc",
     "exec": "npx tsx ./src/index.ts",
-    "lint": "npx eslint ."
+    "lint": "npx eslint .",
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "@typescript-eslint/parser": "^8.35.1",
     "eslint": "^9.29.0",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.34.1"
+    "typescript-eslint": "^8.34.1",
+    "vitest": "^3.2.4"
   }
 }
