@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export class Tag {
     private pairedTags: string[] = ['label', 'div']
 
     constructor(public tagName: string,
-                public options: {[key: string]: string} = {},
-                public inner: string = '') {}
+                public options: { [key: string]: string } = {},
+                public inner: string = '') {
+    }
 
     toString(): string {
         const optionsStr = Object.entries(this.options).reduce((acc, [key, value]) => {
@@ -22,9 +24,9 @@ export class Tag {
 }
 
 export default {
-    formFor(template: {[key: string]: string},
-            options: {[key: string]: string} = {},
-            callback: (f: any) => void): string {
+    formFor(template: { [key: string]: string },
+            options: { [key: string]: string } = {},
+            callback: (f: () => void) => void): string {
         return `<form action="${options.url ?? '#'}" method="post"></form>`
     }
 }

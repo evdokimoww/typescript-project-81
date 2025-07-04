@@ -32,12 +32,12 @@ describe('HexletCode tests', () => {
     const template = { name: 'rob', job: 'hexlet', gender: 'm' };
 
     test('get form without options', () => {
-        const form = HexletCode.formFor(template, {}, (f) => {})
+        const form = HexletCode.formFor(template, {}, () => {})
         expect(form).toEqual('<form action="#" method="post"></form>')
     })
 
     test('get form with options', () => {
-        const form = HexletCode.formFor(template, {url: '/users'}, (f) => {})
+        const form = HexletCode.formFor(template, {url: '/users'}, () => {})
         expect(form).toEqual('<form action="/users" method="post"></form>')
     })
 })
