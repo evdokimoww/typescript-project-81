@@ -21,4 +21,10 @@ export class Tag {
     }
 }
 
-console.log(new Tag('br'))
+export default {
+    formFor(template: {[key: string]: string},
+            options: {[key: string]: string} = {},
+            callback: (f: any) => void): string {
+        return `<form action="${options.url ?? '#'}" method="post"></form>`
+    }
+}
