@@ -1,11 +1,8 @@
 import {describe, expect, test} from 'vitest';
 import HexletCode, {Tag} from "../src";
-import {
-    FixtureFormClear,
-    FixtureFormWithAction, FixtureFormWithCustomTextarea,
-    FixtureFormWithSimpleInputs, FixtureFormWithTextarea,
-    FixtureTemplate
-} from "../__fixtures__/fixtures";
+import {FixtureTemplate} from "../__fixtures__/fixtures";
+import fs from 'fs'
+import path from 'path'
 
 describe('class Tag tests', () => {
     test('get simple tag', () => {
@@ -41,13 +38,19 @@ describe('HexletCode tests', () => {
     test('get clear form without options', () => {
         const form = HexletCode.formFor({}, {}, () => {
         })
-        expect(form).toEqual(FixtureFormClear)
+
+        const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-clear.html'), 'utf8')
+
+        expect(form.trim()).toEqual(fixture.trim())
     })
 
     test('get clear form with options', () => {
         const form = HexletCode.formFor({}, {url: '/users'}, () => {
         })
-        expect(form).toEqual(FixtureFormWithAction)
+
+        const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-with-action.html'), 'utf8')
+
+        expect(form.trim()).toEqual(fixture.trim())
     })
 
     test('get form with inputs', () => {
@@ -55,27 +58,36 @@ describe('HexletCode tests', () => {
             f.input('name', {class: 'user-input'});
             f.input('job');
         })
-        expect(form).toEqual(FixtureFormWithSimpleInputs)
+
+        const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-simple-inputs.html'), 'utf8')
+
+        expect(form.trim()).toEqual(fixture.trim())
     })
 
     test('get form with textarea', () => {
         const form = HexletCode.formFor(FixtureTemplate, {}, (f) => {
             f.input('job', {as: 'textarea'});
         })
-        expect(form).toEqual(FixtureFormWithTextarea)
+
+        const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-textarea.html'), 'utf8')
+
+        expect(form.trim()).toEqual(fixture.trim())
     })
 
     test('get form with custom textarea', () => {
         const form = HexletCode.formFor(FixtureTemplate, {}, (f) => {
             f.input('job', {as: 'textarea', rows: 50, cols: 50});
         })
-        expect(form).toEqual(FixtureFormWithCustomTextarea)
+
+        const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-custom-textarea.html'), 'utf8')
+
+        expect(form.trim()).toEqual(fixture.trim())
     })
 
     test('get error', () => {
         const errorFunc = () => HexletCode.formFor(FixtureTemplate, {}, (f) => {
             f.input('name');
-            f.input('job', { as: 'textarea' });
+            f.input('job', {as: 'textarea'});
             f.input('age');
         })
         expect(() => errorFunc()).toThrowError('Field \'age\' does not exist in the template')
