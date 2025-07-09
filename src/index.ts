@@ -35,7 +35,7 @@ export class Tag implements ITag {
 class TagInput implements ITagInput {
     defaultTagsOptions: DefaultTagsOptionsType = {
         input: {type: 'text'},
-        textarea: {cols: 20, rows: 40}
+        textarea: {rows: 40, cols: 20}
     }
 
     constructor(public tagName: string,
@@ -103,8 +103,8 @@ class Form implements IForm {
 
             return acc
         }, {
-            action: '#',
-            method: 'post'
+            method: 'post',
+            action: '#'
         })
 
         return new Tag('form', formOptions).toHtml()
