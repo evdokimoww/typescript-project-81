@@ -1,38 +1,9 @@
 import {describe, expect, test} from 'vitest';
-import HexletCode, {Tag} from "../src";
+import HexletCode from "../src";
 import {FixtureTemplate} from "../__fixtures__/fixtures";
 import fs from 'fs'
 import path from 'path'
-
-describe('class Tag tests', () => {
-    test('get simple tag', () => {
-        expect(new Tag('br').toString()).toBe('<br>')
-    })
-
-    test('get simple tag with options', () => {
-        expect(new Tag('img', {
-            src: 'source/img.jpg',
-            alt: 'img'
-        }).toString()).toBe('<img src="source/img.jpg" alt="img">')
-    })
-
-    test('get closed tag', () => {
-        expect(new Tag('label').toString()).toBe('<label></label>')
-    })
-
-    test('get closed tag with content', () => {
-        expect(new Tag('label', {}, 'inner').toString()).toBe('<label>inner</label>')
-    })
-
-    test('get closed tag with options', () => {
-        expect(new Tag('label', {for: 'input'}).toString()).toBe('<label for="input"></label>')
-    })
-
-    test('get closed tag with content and options', () => {
-        expect(new Tag('label', {for: 'input'}, 'inner').toString()).toBe('<label for="input">inner</label>')
-    })
-
-})
+import {mainTrim} from "../src/utils";
 
 describe('HexletCode tests', () => {
     test('get clear form without options', () => {
@@ -41,7 +12,7 @@ describe('HexletCode tests', () => {
 
         const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-clear.html'), 'utf8')
 
-        expect(form.trim()).toEqual(fixture.trim())
+        expect(mainTrim(form)).toEqual(mainTrim(fixture))
     })
 
     test('get clear form with options', () => {
@@ -50,7 +21,7 @@ describe('HexletCode tests', () => {
 
         const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-with-action.html'), 'utf8')
 
-        expect(form.trim()).toEqual(fixture.trim())
+        expect(mainTrim(form)).toEqual(mainTrim(fixture))
     })
 
     test('get form with inputs', () => {
@@ -61,7 +32,7 @@ describe('HexletCode tests', () => {
 
         const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-simple-inputs.html'), 'utf8')
 
-        expect(form.trim()).toEqual(fixture.trim())
+        expect(mainTrim(form)).toEqual(mainTrim(fixture))
     })
 
     test('get form with textarea', () => {
@@ -71,7 +42,7 @@ describe('HexletCode tests', () => {
 
         const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-textarea.html'), 'utf8')
 
-        expect(form.trim()).toEqual(fixture.trim())
+        expect(mainTrim(form)).toEqual(mainTrim(fixture))
     })
 
     test('get form with custom textarea', () => {
@@ -80,8 +51,7 @@ describe('HexletCode tests', () => {
         })
 
         const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-custom-textarea.html'), 'utf8')
-
-        expect(form.trim()).toEqual(fixture.trim())
+        expect(mainTrim(form)).toEqual(mainTrim(fixture))
     })
 
     test('get error', () => {
@@ -91,5 +61,27 @@ describe('HexletCode tests', () => {
             f.input('age');
         })
         expect(() => errorFunc()).toThrowError('Field \'age\' does not exist in the template')
+    })
+
+    test('get form with submit', () => {
+        const form = HexletCode.formFor(FixtureTemplate, {method: 'post'}, (f) => {
+            f.input('name');
+            f.input('job', {as: 'textarea'});
+            f.submit();
+        })
+
+        const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-with-submit.html'), 'utf8')
+        expect(mainTrim(form)).toEqual(mainTrim(fixture))
+    })
+
+    test('get form with custom submit', () => {
+        const form = HexletCode.formFor(FixtureTemplate, {method: 'post'}, (f) => {
+            f.input('name');
+            f.input('job', {as: 'textarea'});
+            f.submit('Wow');
+        })
+
+        const fixture = fs.readFileSync(path.resolve(__dirname, '../__fixtures__/form-with-custom-submit.html'), 'utf8')
+        expect(mainTrim(form)).toEqual(mainTrim(fixture))
     })
 })

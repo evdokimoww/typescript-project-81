@@ -12,22 +12,24 @@ export type DefaultTagsOptionsType = {
 }
 
 export interface ITag {
-    pairedTags: string[],
     tagName: string,
     options: OptionsType,
     inner?: string,
+    toHtml(): HTMLElement,
     toString(): string,
 }
 
 export interface ITagInput extends ITag {
     defaultTagsOptions: DefaultTagsOptionsType,
-    name: string,
+    name?: string,
 }
 
 export interface IForm {
-    inputs: string[],
+    inputs: HTMLElement[],
     template: TemplateType,
     options: OptionsType,
     input(id: string, options?: OptionsType): void
+    submit(value?: string): void
+    toHtml(): HTMLElement,
     toString(): string
 }

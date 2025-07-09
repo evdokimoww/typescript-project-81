@@ -1,36 +1,38 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {DefaultTagsOptionsType, IForm, ITag, ITagInput, OptionsType, TemplateType} from "./types";
+import {isKeyOf} from "./utils";
+import {JSDOM} from 'jsdom';
 
-function isKeyOf<T extends object>(key: string, obj: T): boolean {
-    return key in obj;
-}
+const dom = new JSDOM('<!DOCTYPE html>');
+const document = dom.window.document;
 
 export class Tag implements ITag {
-    pairedTags: string[] = ['label', 'div']
-
     constructor(public tagName: string,
                 public options: OptionsType = {},
                 public inner: string = '') {
     }
 
-    toString(): string {
-        const optionsStr = Object.entries(this.options).reduce((acc, [key, value]) => {
-            const str = `${key}="${value}"`
-            return acc ? `${acc} ${str}` : ` ${str}`
-        }, '');
+    toHtml(): HTMLElement {
+        const element = document.createElement(this.tagName);
 
-        const startTag = `<${this.tagName}${optionsStr.length ? optionsStr : ''}>`
-
-        if (this.pairedTags.includes(this.tagName)) {
-            return `${startTag}${this.inner}</${this.tagName}>`
+        if (Object.keys(this.options).length !== 0) {
+            for (const key in this.options) {
+                element.setAttribute(key, String(this.options[key]));
+            }
         }
 
-        return startTag
+        if (this.inner) {
+            element.innerHTML = this.inner;
+        }
+
+        return element
+    }
+
+    toString(): string {
+        return this.toHtml().outerHTML
     }
 }
 
 class TagInput implements ITagInput {
-    pairedTags: string[] = ['textarea']
     defaultTagsOptions: DefaultTagsOptionsType = {
         input: {type: 'text'},
         textarea: {cols: 20, rows: 40}
@@ -39,39 +41,32 @@ class TagInput implements ITagInput {
     constructor(public tagName: string,
                 public options: OptionsType = {},
                 public inner: string = '',
-                public name: string) {
+                public name: string = '') {
     }
 
-    toString(): string {
+    toHtml(): HTMLElement {
         const tag: string = isKeyOf('as', this.options) ? String(this.options.as) : this.tagName
 
         const inKeyInObj: boolean = isKeyOf(tag, this.defaultTagsOptions)
 
         const resultOptions: OptionsType = {
-            name: this.name,
+            ...(this.name && {name: this.name}),
             ...(inKeyInObj ? this.defaultTagsOptions[tag as keyof DefaultTagsOptionsType] : {}),
+            ...(tag !== 'textarea' ? {value: this.inner} : {}),
             ...this.options,
-            ...(!this.pairedTags.includes(tag) ? {value: this.inner} : {})
         }
 
-        const optionsStr: string[] = Object.entries(resultOptions).reduce((acc: string[], [key, value]) => {
-            const str: string = `${key}="${String(value)}"`
-            acc.push(str)
-            return acc
-        }, []);
+        return new Tag(tag, resultOptions, this.inner).toHtml()
+    }
 
-        const startTag = `<${tag}${optionsStr.length ? ` ${optionsStr.join(' ')}` : ''}>`
-
-        if (this.pairedTags.includes(tag)) {
-            return `${startTag}${this.inner}</${tag}>`
-        }
-
-        return startTag
+    toString(): string {
+        const element = this.toHtml()
+        return element.toString()
     }
 }
 
 class Form implements IForm {
-    public inputs: string[] = []
+    public inputs: HTMLElement[] = []
 
     constructor(public template: TemplateType,
                 public options: OptionsType = {}) {
@@ -82,13 +77,46 @@ class Form implements IForm {
             throw new Error(`Field '${id}' does not exist in the template.`)
         }
 
-        const input = new TagInput('input', options, this.template[id] ?? '', id).toString()
+        const input = new TagInput('input', options, this.template[id] ?? '', id).toHtml()
+
+        const upperLabelInner = id.charAt(0).toUpperCase() + id.slice(1)
+        const labelForInput = new Tag('label', {for: id}, upperLabelInner).toHtml()
+
+        this.inputs.push(labelForInput)
         this.inputs.push(input)
     }
 
+    submit(value: string = 'Save'): void {
+        const input = new TagInput('input', {type: 'submit', value}).toHtml()
+        this.inputs.push(input)
+    }
+
+    toHtml(): HTMLElement {
+        console.log(this.options)
+        const formOptions: OptionsType = Object.entries(this.options).reduce((acc: OptionsType, [key, value]) => {
+            if (key === 'url') {
+                acc['action'] = value
+            } else {
+                acc[key] = value
+            }
+
+            return acc
+        }, {
+            action: '#',
+            method: 'post'
+        })
+
+        return new Tag('form', formOptions).toHtml()
+    }
+
     toString(): string {
-        const inputsString: string = this.inputs.length ? this.inputs.map((el) => `    ${el}`).join('\n') : ''
-        return `<form action="${this.options.url ?? '#'}" method="post">${inputsString.length ? `\n${inputsString}\n` : ''}</form>`
+        const form = this.toHtml()
+        if (this.inputs.length !== 0) {
+            this.inputs.forEach((input) => {
+                form.appendChild(input)
+            })
+        }
+        return form.outerHTML
     }
 }
 
