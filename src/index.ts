@@ -55,6 +55,7 @@ class TagInput implements ITagInput {
             ...(tag !== 'textarea' ? {value: this.inner} : {}),
             ...this.options,
         }
+        delete resultOptions.as
 
         return new Tag(tag, resultOptions, this.inner).toHtml()
     }
