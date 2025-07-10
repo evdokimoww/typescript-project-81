@@ -1,5 +1,11 @@
 name: sonarqube-check
 
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '**'
 jobs:
   sonarqube:
     name: SonarQube
