@@ -31,7 +31,7 @@ export class Tag implements ITag {
 class TagInput implements ITagInput {
     defaultTagsOptions: DefaultTagsOptionsType = {
         input: {type: 'text'},
-        textarea: {rows: 40, cols: 20}
+        textarea: {cols: 20, rows: 40}
     }
 
     constructor(public tagName: string,
