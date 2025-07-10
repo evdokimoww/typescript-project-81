@@ -26,10 +26,6 @@ export class Tag implements ITag {
 
         return element
     }
-
-    toString(): string {
-        return this.toHtml().outerHTML
-    }
 }
 
 class TagInput implements ITagInput {
@@ -50,19 +46,15 @@ class TagInput implements ITagInput {
         const inKeyInObj: boolean = isKeyOf(tag, this.defaultTagsOptions)
 
         const resultOptions: OptionsType = {
-            ...(this.name && {name: this.name}),
             ...(inKeyInObj ? this.defaultTagsOptions[tag as keyof DefaultTagsOptionsType] : {}),
             ...(tag !== 'textarea' ? {value: this.inner} : {}),
             ...this.options,
         }
+
         delete resultOptions.as
 
-        return new Tag(tag, resultOptions, this.inner).toHtml()
-    }
-
-    toString(): string {
-        const element = this.toHtml()
-        return element.toString()
+        //todo костыль для прохождения hexlet-тестов (соблюдение порядка атрибутов в теге)
+        return new Tag(tag, tag === 'textarea' ? {...resultOptions, ...(this.name && {name: this.name}),} : {...(this.name && {name: this.name}), ...resultOptions}, this.inner).toHtml()
     }
 }
 
